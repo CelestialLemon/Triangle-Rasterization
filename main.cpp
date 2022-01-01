@@ -6,6 +6,7 @@
 #include "include/Draw/DrawLine.h"
 #include "include/Draw/DrawTriangle.h"
 #include "include/Draw/DrawPoint.h"
+#include "include/3D/Model3D.h"
 #include "include/camera.h"
 
 
@@ -14,29 +15,13 @@ int main()
     srand (static_cast <unsigned> (time(0)));
     sf::RenderWindow window(sf::VideoMode(600, 600), "Triangle Rasterization");
     
-    Camera cam(0.5f, 1.0f, 1.0f);
-    
+    Camera cam(1000, 500, 500);
+
     std::vector<Vec3> points;
-    
-    Vec3 a(-1, 1, 4); 
-    Vec3 b(1, 1, 4);
-    Vec3 c(-1, -1, 4);
-    Vec3 d(1, -1, 4);
-    Vec3 e(-1, 1, 8); 
-    Vec3 f(1, 1, 8);
-    Vec3 g(-1, -1, 8);
-    Vec3 h(1, -1, 8);
 
-    points.push_back(a);
-    points.push_back(b);
-    points.push_back(c);
-    points.push_back(d);
-    points.push_back(e);
-    points.push_back(f);
-    points.push_back(g);
-    points.push_back(h);
-
-    float moveSpeed = 0.005f;
+    Model3D model;
+    model.LoadFromFile("E:\\Temp\\source\\hero042.hero042_mat.shadergraph.obj");
+    float moveSpeed = 5.0f;
     
     while (window.isOpen())
     {
@@ -46,154 +31,217 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        
 
-        window.clear();
-
+        //control movements
+        {
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
-            for(int i=0; i < points.size(); i++)
+            for(int i=0; i < model.vertices.size(); i++)
             {
-                points[i].x -= moveSpeed;
+                model.vertices[i].x -= moveSpeed;
             }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
         {
-            for(int i=0; i < points.size(); i++)
+            for(int i=0; i < model.vertices.size(); i++)
             {
-                points[i].x += moveSpeed;
+                model.vertices[i].x += moveSpeed;
             }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
-            for(int i=0; i < points.size(); i++)
+            for(int i=0; i < model.vertices.size(); i++)
             {
-                points[i].y += moveSpeed;
+                model.vertices[i].y += moveSpeed;
             }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
         {
-            for(int i=0; i < points.size(); i++)
+            for(int i=0; i < model.vertices.size(); i++)
             {
-                points[i].y -= moveSpeed;
+                model.vertices[i].y -= moveSpeed;
             }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
         {
-            for(int i=0; i < points.size(); i++)
+            for(int i=0; i < model.vertices.size(); i++)
             {
-                points[i].z += moveSpeed;
+                model.vertices[i].z += moveSpeed;
             }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
         {
-            for(int i=0; i < points.size(); i++)
+            for(int i=0; i < model.vertices.size(); i++)
             {
-                points[i].z -= moveSpeed;
+                model.vertices[i].z -= moveSpeed;
             }
         }
-        
-        for(int i=0; i < points.size(); i++)
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Add))
         {
-            DrawPoint(cam.Transform(points[i]), sf::Color::Red, &window);
+            for(int i=0; i < model.vertices.size(); i++)
+            {
+                model.vertices[i].x *= 1.01;
+                model.vertices[i].y *= 1.01;
+                model.vertices[i].z *= 1.01;
+
+            }
         }
 
-        // DrawLine(cam.Transform(points[0]), cam.Transform(points[1]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[1]), cam.Transform(points[5]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[5]), cam.Transform(points[4]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[4]), cam.Transform(points[0]), sf::Color::Red, &window);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Subtract))
+        {
+            for(int i=0; i < model.vertices.size(); i++)
+            {
+                model.vertices[i].x *= 0.99;
+                model.vertices[i].y *= 0.99;
+                model.vertices[i].z *= 0.99;
 
-        // DrawLine(cam.Transform(points[0]), cam.Transform(points[2]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[1]), cam.Transform(points[3]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[5]), cam.Transform(points[7]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[4]), cam.Transform(points[6]), sf::Color::Red, &window);
+            }
+        }
+        }
 
-        // DrawLine(cam.Transform(points[2]), cam.Transform(points[3]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[3]), cam.Transform(points[7]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[7]), cam.Transform(points[6]), sf::Color::Red, &window);
-        // DrawLine(cam.Transform(points[6]), cam.Transform(points[2]), sf::Color::Red, &window);
+        window.clear();
 
-        sf::Vertex line1[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[0]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[1])))
-        };
+        //renders a vertex points only grace
+        //renders a barely recognizable mess
+        // for(int i=0; i < model.vertices.size(); i++)
+        // {
+        //     Vec2 transformedPosition = cam.Transform(model.vertices[i]);
+            
+        //     float onScreenPosX = (transformedPosition.x + 1.0f) * (SCREEN_WIDTH / 2);
+        //     float onScreenPosY = (transformedPosition.y + 1.0f) * (SCREEN_HEIGHT / 2);
 
-        sf::Vertex line2[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[1]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[5])))
-        };
+        //     sf::Vertex v(sf::Vector2f(onScreenPosX, SCREEN_HEIGHT - onScreenPosY));
+        //     v.color = sf::Color::Red;
 
-        sf::Vertex line3[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[5]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[4])))
-        };
+        //     window.draw(&v, 1, sf::Points);
+        // }
 
-        sf::Vertex line4[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[4]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[0])))
-        };
-        //////////
+        /*-----------------------------------------------------------------------*/
 
-        sf::Vertex line5[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[0]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[2])))
-        };
+        //drawing grace by draw lines between face triangle vertices
+        //renders a beautiful wireframe grace
+        // for(int i=0; i < model.triangles.size(); i++)
+        // {
+        //     //printf("Rendering triangles with indices %d %d %d\n", model.triangles[i].a,
+        //     //model.triangles[i].b, model.triangles[i].c);
 
-        sf::Vertex line6[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[1]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[3])))
-        };
+        //     Vec2 transformedA = cam.Transform(model.vertices[model.triangles[i].a - 1]);
+        //     Vec2 transformedB = cam.Transform(model.vertices[model.triangles[i].b - 1]);
+        //     Vec2 transformedC = cam.Transform(model.vertices[model.triangles[i].c - 1]);
 
-        sf::Vertex line7[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[5]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[7])))
-        };
+        //     float onScreenPosAX = (transformedA.x + 1.0f) * (SCREEN_WIDTH / 2);
+        //     float onScreenPosBX = (transformedB.x + 1.0f) * (SCREEN_WIDTH / 2);
+        //     float onScreenPosCX = (transformedC.x + 1.0f) * (SCREEN_WIDTH / 2);
 
-        sf::Vertex line8[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[4]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[6])))
-        };
+        //     float onScreenPosAY = (transformedA.y + 1.0f) * (SCREEN_HEIGHT / 2);
+        //     float onScreenPosBY = (transformedB.y + 1.0f) * (SCREEN_HEIGHT / 2);
+        //     float onScreenPosCY = (transformedC.y + 1.0f) * (SCREEN_HEIGHT / 2);
 
-        //////////////
+        //     onScreenPosAY = SCREEN_HEIGHT - onScreenPosAY;
+        //     onScreenPosBY = SCREEN_HEIGHT - onScreenPosBY;
+        //     onScreenPosCY = SCREEN_HEIGHT - onScreenPosCY;
 
-        sf::Vertex line9[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[2]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[3])))
-        };
+        //     sf::Vertex lineAB[] = {
+        //         sf::Vertex(sf::Vector2f(onScreenPosAX, onScreenPosAY)),
+        //         sf::Vertex(sf::Vector2f(onScreenPosBX, onScreenPosBY))
+        //     };
 
-        sf::Vertex line10[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[3]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[7])))
-        };
+        //     lineAB[0].color = sf::Color::Red;
+        //     lineAB[1].color = sf::Color::Red;
 
-        sf::Vertex line11[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[7]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[6])))
-        };
 
-        sf::Vertex line12[] = {
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[6]))),
-            sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[2])))
-        };
+        //     sf::Vertex lineBC[] = {
+        //         sf::Vertex(sf::Vector2f(onScreenPosBX, onScreenPosBY)),
+        //         sf::Vertex(sf::Vector2f(onScreenPosCX, onScreenPosCY))
+        //     };
 
-        window.draw(line1, 2, sf::Lines);
-        window.draw(line2, 2, sf::Lines);
-        window.draw(line3, 2, sf::Lines);
-        window.draw(line4, 2, sf::Lines);
-        window.draw(line5, 2, sf::Lines);
-        window.draw(line6, 2, sf::Lines);
-        window.draw(line7, 2, sf::Lines);
-        window.draw(line8, 2, sf::Lines);
-        window.draw(line9, 2, sf::Lines);
-        window.draw(line10, 2, sf::Lines);
-        window.draw(line11, 2, sf::Lines);
-        window.draw(line12, 2, sf::Lines);
+        //     lineBC[0].color = sf::Color::Red;
+        //     lineBC[1].color = sf::Color::Red;
 
-        //DrawPoint(cam.Transform(a), sf::Color::Red, &window);
+
+        //     sf::Vertex lineCA[] = {
+        //         sf::Vertex(sf::Vector2f(onScreenPosCX, onScreenPosCY)),
+        //         sf::Vertex(sf::Vector2f(onScreenPosAX, onScreenPosAY))
+        //     };
+
+        //     lineCA[0].color = sf::Color::Red;
+        //     lineCA[1].color = sf::Color::Red;
+
+        //     window.draw(lineAB, 2, sf::Lines);
+        //     window.draw(lineBC, 2, sf::Lines);
+        //     window.draw(lineCA, 2, sf::Lines);
+
+
+        // }
+
+        /*-----------------------------------------------------------------------*/
+
+        //drawing grace with vertex triangles
+        //renders solid grace
+        // for(int i=0; i < model.triangles.size(); i++)
+        // {
+        //     //printf("Rendering triangles with indices %d %d %d\n", model.triangles[i].a,
+        //     //model.triangles[i].b, model.triangles[i].c);
+
+        //     Vec2 transformedA = cam.Transform(model.vertices[model.triangles[i].a - 1]);
+        //     Vec2 transformedB = cam.Transform(model.vertices[model.triangles[i].b - 1]);
+        //     Vec2 transformedC = cam.Transform(model.vertices[model.triangles[i].c - 1]);
+
+        //     float onScreenPosAX = (transformedA.x + 1.0f) * (SCREEN_WIDTH / 2);
+        //     float onScreenPosBX = (transformedB.x + 1.0f) * (SCREEN_WIDTH / 2);
+        //     float onScreenPosCX = (transformedC.x + 1.0f) * (SCREEN_WIDTH / 2);
+
+        //     float onScreenPosAY = (transformedA.y + 1.0f) * (SCREEN_HEIGHT / 2);
+        //     float onScreenPosBY = (transformedB.y + 1.0f) * (SCREEN_HEIGHT / 2);
+        //     float onScreenPosCY = (transformedC.y + 1.0f) * (SCREEN_HEIGHT / 2);
+
+        //     onScreenPosAY = SCREEN_HEIGHT - onScreenPosAY;
+        //     onScreenPosBY = SCREEN_HEIGHT - onScreenPosBY;
+        //     onScreenPosCY = SCREEN_HEIGHT - onScreenPosCY;
+
+        //     sf::Vertex vertexA = sf::Vertex(sf::Vector2f(onScreenPosAX, onScreenPosAY));
+        //     sf::Vertex vertexB = sf::Vertex(sf::Vector2f(onScreenPosBX, onScreenPosBY));
+        //     sf::Vertex vertexC = sf::Vertex(sf::Vector2f(onScreenPosCX, onScreenPosCY));
+
+        //     vertexA.color = sf::Color::Red;
+        //     vertexB.color = sf::Color::Red;
+        //     vertexC.color = sf::Color::Red;
+
+        //     std::vector<sf::Vertex> verArr;
+
+        //     verArr.push_back(vertexA);
+        //     verArr.push_back(vertexB);
+        //     verArr.push_back(vertexC);
+
+        //     window.draw(&verArr[0], verArr.size(), sf::Triangles);
+        // }
+
+        /*-----------------------------------------------------------------------*/
+
+        //drawing grace with default triangles
+        //renders wild grace with all points attached to one another
+        // std::vector<sf::Vertex> verArr;
+        // for(int i=0; i < model.vertices.size(); i++)
+        // {
+        //     Vec2 transformedPosition = cam.Transform(model.vertices[i]);
+            
+        //     float onScreenPosX = (transformedPosition.x + 1.0f) * (SCREEN_WIDTH / 2);
+        //     float onScreenPosY = (transformedPosition.y + 1.0f) * (SCREEN_HEIGHT / 2);
+
+        //     sf::Vertex v = sf::Vertex(sf::Vector2f(onScreenPosX, SCREEN_HEIGHT - onScreenPosY));
+
+        //     verArr.push_back(v);
+        //     window.draw(&verArr[0], verArr.size(), sf::Triangles);
+
+        // }
+
         window.display();
     }
 
