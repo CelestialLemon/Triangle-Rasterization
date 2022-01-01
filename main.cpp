@@ -158,7 +158,7 @@ int main()
             sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[6])))
         };
 
-        ///////////////
+        //////////////
 
         sf::Vertex line9[] = {
             sf::Vertex(cam.ConvertWorldToScreen(cam.Transform(points[2]))),
